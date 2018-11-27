@@ -80,7 +80,7 @@ uint32_t ADC0_InSeq3(void) {
     /* Poll the conversion completion bit of SS3 */
     while((ADC0_RIS_R & 0x08) == 0x00);
 
-    /* Read FIFO for the value of the pot, and display it to the GLCD */
+    /* Read FIFO for the value, which is the value obtained by the ADC */
     result = ADC0_SSFIFO3_R & 0xFFF;
 
     ADC0_ISC_R = 0x0008; //Clear the bit by writing to it.
@@ -160,7 +160,7 @@ uint32_t ADC1_InSeq2(void) {
     /* Poll the conversion completion bit of SS2 */
     while((ADC1_RIS_R & 0x04) == 0x00);
 
-    /* Read FIFO for the value */
+    /* Read FIFO for the value, which is the value obtained by the ADC */
     result = ADC1_SSFIFO2_R & 0xFFF;
 
     ADC1_ISC_R = 0x0004; //Clear the bit by writing to it.

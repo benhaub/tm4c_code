@@ -1,3 +1,4 @@
+#include "tm4c123gh6pm.h"
 /*
  * rgb.c
  *
@@ -5,47 +6,44 @@
  *      Author: Ben
  */
 
-#include "rgb.h" /*For LED Flashing functions*/
-#include "ports.h" /* For PORTX Definitions */
-
 void flash_red() {
 
     /* Turn on */
-    GPIO_PORTF_DATA |= 0x02;
-    delay();
-    GPIO_PORTF_DATA &= ~0x02;
-    delay();
+    GPIO_PORTF_DATA_R |= 0x02;
+    LED_delay();
+    GPIO_PORTF_DATA_R &= ~0x02;
+    LED_delay();
 }
 
 void flash_blue() {
 
-    GPIO_PORTF_DATA |= 0x04;
-    delay();
-    GPIO_PORTF_DATA &= ~0x04;
-    delay();
+    GPIO_PORTF_DATA_R |= 0x04;
+    LED_delay();
+    GPIO_PORTF_DATA_R &= ~0x04;
+    LED_delay();
 }
 
 void flash_green() {
 
-    GPIO_PORTF_DATA |= 0x08;
-    delay();
-    GPIO_PORTF_DATA &= ~0x08;
-    delay();
+    GPIO_PORTF_DATA_R |= 0x08;
+    LED_delay();
+    GPIO_PORTF_DATA_R &= ~0x08;
+    LED_delay();
 }
 
-void flash_green_stay() {
+void stay_green() {
 
-    GPIO_PORTF_DATA |= 0x08;
+    GPIO_PORTF_DATA_R |= 0x08;
 }
 
 void turn_off_green() {
 
-    GPIO_PORTF_DATA &= ~0x08;
+    GPIO_PORTF_DATA_R &= ~0x08;
 }
 
 void turn_white() {
 
-    GPIO_PORTF_DATA |= 0x0E;
+    GPIO_PORTF_DATA_R |= 0x0E;
 }
 
 void flash_rgb() {
@@ -55,17 +53,17 @@ void flash_rgb() {
     flash_blue();
 }
 
-void flash_red_stay() {
+void stay_red() {
 
-    GPIO_PORTF_DATA |= 0x02;
+    GPIO_PORTF_DATA_R |= 0x02;
 }
 
 void turn_off_red() {
 
-    GPIO_PORTF_DATA &= ~0x02;
+    GPIO_PORTF_DATA_R &= ~0x02;
 }
 
-void delay () {
+void LED_delay() {
     long unsigned i;
     for (i = 0; i < 1000000; i++);
 }

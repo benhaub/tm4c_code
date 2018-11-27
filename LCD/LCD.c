@@ -27,6 +27,11 @@ unsigned char hex2char(unsigned int hex)  {
  * param msg: The string to be displayed
  * param numChars: The size of the input string (use strlen)
  * param yPosition: The y corridinate of the start of the string
+ *                  some useful y positions:
+ *                  0-10 for right near the top
+ *                  50-60 is near the middle
+ *                  100-110 is near the bottom
+ *
  * param char_colour: The colour of the characters
  * param bg_colour: The colour of the background behind each character
  * param fontSize: The size of the string
@@ -39,11 +44,16 @@ void writeLCD(char* msg, size_t numChars, int yPosition, unsigned int char_colou
     for(i = 0; i < numChars; i++) {
 
         ST7735_DrawChar(x, yPosition, msg[i], char_colour, bg_colour, fontSize);
-        if(fontSize == 2) {
+        if(fontSize == 1) {
+
+            x = x + 6;
+        }
+
+        else if(fontSize == 2) {
 
             x = x + 13;
         }
-        else if(fontSize == 3) {
+        else /*(fontsize = 3)*/ {
 
             x = x + 18;
         }
@@ -84,10 +94,10 @@ void LCDinit(unsigned int displayColour, int rotation) {
 }
 
 /*
- * displays any 2-DIGIT number you give it on the LCD int the format
+ * displays any 2-DIGIT number you give it on the LCD in the format 01, 02, 03,..., 99
  *
  * param num: The number to display. To display 0, enter -1.
- * param x and y: postion on the screen
+ * param x and y: position on the screen
  * param char_colour: the colour of the number
  * param bg_colour: The background colour of the number
  * param fontsize: The size of the number being displayed.
@@ -170,4 +180,73 @@ void display2dgNum(int num, int x, int y, unsigned int char_colour, unsigned int
        ST7735_DrawChar(x, y, hex2char(9), ST7735_GREEN, ST7735_BLACK, fontSize);
        ST7735_DrawChar(x + spacing, y, hex2char(dg_1), ST7735_GREEN, ST7735_BLACK, fontSize);
    }
+}
+
+/*
+ * Displays any number in hexidecimal up to 4095 in the format 001, 002,.., 0A, 0B,..., FFF
+ *
+ * param num: The number to display in hex
+ * param x: The x coordinate of the number. Some useful values for x are:
+ *          10: First letter is at the left most side of the screen
+ *
+ * param y: The y coordinate of the number. Some useful values for y are:
+ *          0-10: near the top
+ *          50-60: near the middle
+ *          100-110: near the bottom
+ *
+ * param char_colour: The colour of the character. You can choose from any of
+ *                      the following macros defined in ST7735.h:
+ *                      ST7735_BLACK
+ *                      ST7735_BLUE
+ *                      ST7735_RED
+ *                      ST7735_GREEN
+ *                      ST7735_CYAN
+ *                      ST7735_MAGENTA
+ *                      ST7735_YELLOW
+ *                      ST7735_WHITE
+ *
+ * param bg_colour: The colour of the background on which the character sits.
+ *                  Use any of the colours from the char_colour selection.
+ *
+ * param fontsize: The size of each character on the display. Valid values
+ *                  are 1 - 3
+ *
+ */
+void display12BitHex(int num, int x, int y, unsigned int char_colour, unsigned int bg_colour, int fontSize) {
+
+    int i;
+    int hex[3];
+    /* Good practice not to edit paramters. A number to help along the */
+    /* the conversion to hex */
+    int hexConv = num;
+    /*
+     * hex[2] -> MSB of hex digit
+     * hex[0] -> LSB of hex digit
+     */
+
+    /* Convert num to Hex */
+    hex[0] = hexConv % 16;
+    hexConv = hexConv / 16; /* integer division */
+    hex[1] = hexConv % 16;
+    hexConv = hexConv / 16;
+    hex[2] = hexConv % 16;
+
+    for(i = 2; i >= 0; i--) {
+
+        ST7735_DrawChar(x, y, hex2char(hex[i]), char_colour, bg_colour, fontSize);
+
+        if(fontSize == 1) {
+
+            x = x + 9;
+        }
+
+        else if(fontSize == 2) {
+
+            x = x + 13;
+        }
+        else /*(fontsize = 3)*/ {
+
+            x = x + 18;
+        }
+    }
 }
