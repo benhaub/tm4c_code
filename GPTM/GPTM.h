@@ -8,7 +8,10 @@
 #ifndef GPTM_H_
 #define GPTM_H_
 
-void init_timer0B(unsigned int, unsigned int, int, int, unsigned int, uint32_t, unsigned int);
-
+void init_timer0B_PWMperiodic(unsigned int, uint32_t, unsigned int, int);
+void init_timer0B_PWMoneShot(unsigned int, uint32_t, unsigned int, int);
+void init_timer0B_oneShot(int, int, int, int, uint32_t);
+void init_timer0B_periodic(int, int, int, int, uint32_t);
+void init_timer0B_capture();
 
 #endif /* GPTM_H_ */

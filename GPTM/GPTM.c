@@ -1,8 +1,9 @@
 #include "tm4c123gh6pm.h"
 #include <inttypes.h>
+#include <stdlib.h>
 
 /*
- * Initialize and execute General Purpose Timer Module 0, using counter B
+ * Initialize and enable General Purpose Timer Module 0, using counter B
  * with inverted output. The output pin is PF4
  *
  * param control:
@@ -36,47 +37,50 @@
  *
  * param width:
  *          Timer match event. Uses low bits Useful values:
- *          0x7FF - 50% duty
+ *          0x7FF - 50% duty if using max period (0xFFF).
+ *
+ * param snap (Pg. 687):
+ *          Use snapshot mode for one-shot and period mode. Use a positive
+ *          number or 0 to enable, negative to disable. Snap shot save the value
+ *          of TBV in GPTMBR when the timeout event occurs. The value
+ *          of this parameter does not matter if using PWM mode.
+ *
+ * param wot (Pg. 671):
+ *          Wait on trigger. If negative, the timer begins as soon as TBEN is turned
+ *          on (as soon as this function returns). If 0 or greater, does not start counting
+ *          until the previous counter in the daisy chain reaches it's timeout event. This
+ *          mode is allowed for PWM, but currently has no effect when using this function.
+ *
+ * param mte (Pg. 688)
+ *          An interrupt is generated on MRIS when the match value in MATCHR is reach in one-shot
+ *          or periodic modes. Value does not matter in PWM mode.
  */
-void init_timer0B(unsigned int control, unsigned int mode, int dir, int inv, unsigned int frequency, uint32_t period, unsigned int width) {
+
+void init_timer0B_PWMperiodic(unsigned int control, uint32_t period, unsigned int width, int inv) {
 
     volatile unsigned long delay_clk;
     SYSCTL_RCGCTIMER_R |= 0x01;
     delay_clk = SYSCTL_RCGCTIMER_R; //delay to allow the clock to settle, no operation
-    /* Disable timerB while we set it up */
-    if(mode == 0x00A) {
-        init_timer0B_PWM(control, mode, period, width, inv);
-        return;
-    }
     TIMER0_CTL_R &= ~0x0100;
     TIMER0_CFG_R |= control;
-    TIMER0_TBMR_R |= mode;
-    if(dir >= 0)
-        TIMER0_TBMR_R |= 0x10;
-    else
-        TIMER0_TBMR_R &= ~0x10;
-    /* Pre-scale. Controls the timer frequency to be bus frequency / prescale + 1 */
-    TIMER0_TBPR_R = frequency;
+    TIMER0_TBMR_R |= 0x00A;
     TIMER0_TBILR_R = period;
     TIMER0_TBMATCHR_R |= width;
-    /* In PWM mode, PMR is used alongside MATCHR to change the value of */
-    /* the PWML bit */
     if(inv >= 0)
         TIMER0_CTL_R &= ~0x4000;
     else
         TIMER0_CTL_R |= 0x4000;
     TIMER0_CTL_R |= 0x0100;
 }
-/*
- * Helper function for init_timer0B to start up the pulse width modulator.
- * Only these registers are enabled when using PWM capability. Enabling
- * extra registers will disable the PWM.
- */
-void init_timer0B_PWM(unsigned int control, unsigned int mode, uint32_t period, unsigned int width, int inv) {
 
+void init_timer0B_PWMoneShot(unsigned int control, uint32_t period, unsigned int width, int inv) {
+
+    volatile unsigned long delay_clk;
+    SYSCTL_RCGCTIMER_R |= 0x01;
+    delay_clk = SYSCTL_RCGCTIMER_R; //delay to allow the clock to settle, no operation
     TIMER0_CTL_R &= ~0x0100;
     TIMER0_CFG_R |= control;
-    TIMER0_TBMR_R |= mode;
+    TIMER0_TBMR_R |= 0x009;
     TIMER0_TBILR_R = period;
     TIMER0_TBMATCHR_R |= width;
     if(inv >= 0)
@@ -84,4 +88,19 @@ void init_timer0B_PWM(unsigned int control, unsigned int mode, uint32_t period, 
     else
         TIMER0_CTL_R |= 0x4000;
     TIMER0_CTL_R |= 0x0100;
+}
+
+void init_timer0B_oneShot(int dir, int snap, int wot, int mte, uint32_t period) {
+
+
+}
+
+void init_timer0B_periodic(dir, snap, wot, mte, period) {
+
+
+}
+
+void init_timer0B_capture() {
+
+    /* TODO: Implement */
 }

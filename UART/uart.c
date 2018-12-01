@@ -47,7 +47,7 @@ void UART1_init(int baud)
 }
 
 /* UART send character function */
-void UART_send(unsigned char uartSendData)
+void UART1_send(unsigned char uartSendData)
 {
     while((UART1_FR_R & 0x20) != 0); // wait if Transmit FIFO is full, TXFF
     UART1_DR_R = uartSendData;
@@ -55,7 +55,7 @@ void UART_send(unsigned char uartSendData)
 }
 
 /* UART receive character function */
-unsigned char UART_recieve(void)
+unsigned char UART1_recieve(void)
 {
     while((UART1_FR_R & 0x10) != 0);  // wait until receive FIFO is empty, RXFE
     return((unsigned char)(UART1_DR_R & 0xFF)); // return the received character (only 8-bit)

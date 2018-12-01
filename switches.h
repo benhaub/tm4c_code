@@ -11,7 +11,9 @@
 #ifndef GPIO_INIT_PROCEDURES_H_
 #define GPIO_INIT_PROCEDURES_H_
 
-void init_sw1_and_sw2();
-void sw1_and_sw2_interrupt();
+void init_sw1();
+void init_sw2();
+void sw1_interrupt(int, int, int);
+void sw2_interrupt(int, int, int);
 
 #endif /* GPIO_INIT_PROCEDURES_H_ */
