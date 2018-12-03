@@ -3,26 +3,35 @@
 #include <math.h>
 
 /*
- * Set uart1 for a 16MHz clock
+ * Initialise uart1.
  *
  * param baud:
  *          The baud rate
+ *
+ * param clk:
+ *          The bus frequency being used in MHz. Enter numbers like, 8, 16, or
+ *          80.
  */
-void UART1_init(int baud)
+void UART1_init(int baud, int clk)
 {
     SYSCTL_RCGC1_R |= 0x02; // p.421, activate UART1
     SYSCTL_RCGC2_R |= 0x02; // p.424, activate clock gating for Port B
 
     UART1_CTL_R &= ~0x01; // p.868, disable UART1 during config
 
-    double IB = 16E6/16/baud; //Calculate the baud rate
+    double IB;
+    /* Check ISE bit */
+    if(UART1_CTL_R & 0x20)
+        IB = (clk * 1E6)/8/baud; //Calculate the baud rate. Formula on Pg. 845
+    else
+        IB = (clk * 1E6)/16/baud;
     int IB_whole = IB; //Truncate off the decimal.
-    float FB = IB - IB_whole;
+    float FB = IB - IB_whole; //obtain the decimal portion
 
     //Convert the fraction into binary with 8 bits of precision.
     int i;
     unsigned int FB_whole;
-    int bin;
+    int bin = 0;
     for(i = 7; i >=0; i--) {
 
         FB = FB * 2;

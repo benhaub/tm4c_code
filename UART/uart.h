@@ -8,7 +8,7 @@
 #ifndef UART_H_
 #define UART_H_
 
-void UART1_init(int);
+void UART1_init(int, int);
 void UART1_send(unsigned char);
 unsigned char UART1_recieve(void);
 unsigned char ToUpperCase(unsigned char);
