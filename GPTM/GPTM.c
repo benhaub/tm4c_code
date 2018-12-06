@@ -128,18 +128,18 @@ void init_timer0B_oneShot(int config, int dir, int snap, int wot, int load) {
     /* Disable TimerB for setup */
     TIMER0_CTL_R &= ~0x0100; //Pg. 690
     if(config)
-        TIMER0_CFG_R |= 0x00000000; //Pg. 680
+        TIMER0_CFG_R |= 0x000; //Pg. 680
     else
-        TIMER0_CFG_R |= 0x00000004;
+        TIMER0_CFG_R |= 0x004;
     TIMER0_TBMR_R |= 0x01;
     if(snap)
-        TIMER0_TBMR_R |= 0x00000080;
+        TIMER0_TBMR_R |= 0x080;
     else
-        TIMER0_TBMR_R &= ~0x00000080;
+        TIMER0_TBMR_R &= ~0x080;
     if(wot)
-        TIMER0_TBMR_R |= 0x00000040;
+        TIMER0_TBMR_R |= 0x040;
     else
-        TIMER0_TBMR_R &= ~0x00000040;
+        TIMER0_TBMR_R &= ~0x040;
     TIMER0_TBILR_R = load;
     /* Enable the timer */
     TIMER0_CTL_R |= 0x0100;
@@ -183,18 +183,22 @@ void init_timer0B_periodic(int config, int dir, int snap, int wot, int load) {
     /* Disable TimerB for setup */
     TIMER0_CTL_R &= ~0x0100;
     if(config)
-        TIMER0_CFG_R |= 0x00000000;
+        TIMER0_CFG_R |= 0x000;
     else
-        TIMER0_CFG_R |= 0x00000004;
+        TIMER0_CFG_R |= 0x004;
     TIMER0_TBMR_R |= 0x02;
+    if(dir)
+        TIMER0_TBMR_R |= 0x010;
+    else
+        TIMER0_TBMR_R &= ~0x010;
     if(snap)
-        TIMER0_TBMR_R |= 0x00000080;
+        TIMER0_TBMR_R |= 0x080;
     else
-        TIMER0_TBMR_R &= ~0x00000080;
+        TIMER0_TBMR_R &= ~0x080;
     if(wot)
-        TIMER0_TBMR_R |= 0x00000040;
+        TIMER0_TBMR_R |= 0x040;
     else
-        TIMER0_TBMR_R &= ~0x00000040;
+        TIMER0_TBMR_R &= ~0x040;
     TIMER0_TBILR_R = load;
     /* Enable the timer */
     TIMER0_CTL_R |= 0x0100;
