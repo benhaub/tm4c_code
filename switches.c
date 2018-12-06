@@ -47,7 +47,9 @@ void init_sw2() {
  *          1 interrupt on the rising edge of the clock
  *
  */
-void sw1_interrupt(int edgeSense, int bothEdges, int edgeEvent) {
+void sw1_interrupt(int edgeSense, int bothEdges, int edgeEvent, int pri) {
+
+    int priority;
 
     //interrupts for PF4
     GPIO_PORTF_IM_R &= ~0x10 ; // clear, disable (mask) int when config, p.609
@@ -67,8 +69,11 @@ void sw1_interrupt(int edgeSense, int bothEdges, int edgeEvent) {
     GPIO_PORTF_ICR_R = 0x10; // clear int flag
     GPIO_PORTF_IM_R |= 0x10; // arm interrupt on PF4 after configured
 
-    // we want INT30, i.e., 4n+2, 4*7+2, bits 23:21, we set priority level to say '5' ==> 101 => 1010 = A
-    NVIC_PRI7_R = (NVIC_PRI7_R & 0xFF0FFFFF)|0x00A00000; // priority 5, lower means higher priority
+    /* we want INT30, i.e., 4n+2, 4*7+2, bits 23:21, we set priority level to */
+    /* say '5' ==> 101 => 1010 = A. We choose 4n + 2 because we need an equation */
+    /* that gives n as a whole number and a valid priority number. */
+    priority = pri << 21;
+    NVIC_PRI7_R = (NVIC_PRI7_R & 0xFF0FFFFF) | priority; // priority 5, lower means higher priority
     NVIC_EN0_R = 0x40000000;  // finally enable Interrupt # 30 (i.e., IRQ30 ==> bit 30 of NVIC_EN0), GPIO PortF
 }
 
@@ -89,8 +94,14 @@ void sw1_interrupt(int edgeSense, int bothEdges, int edgeEvent) {
  *          0 interrupt on the falling edge of the clock
  *          1 interrupt on the rising edge of the clock
  *
+ * param priority
+ *          The priority of the interrupt, from 0 to 7. The lower the number,
+ *          the higher the priority.
+ *
  */
-void sw2_interrupt(int edgeSense, int bothEdges, int edgeEvent) {
+void sw2_interrupt(int edgeSense, int bothEdges, int edgeEvent, int pri) {
+
+      int priority;
 
       //interrupts for PF0 - sw2
       GPIO_PORTF_IM_R &= ~0x01; // Disable interrupts while we set them up
@@ -111,6 +122,8 @@ void sw2_interrupt(int edgeSense, int bothEdges, int edgeEvent) {
       GPIO_PORTF_IM_R |= 0x01; //Re-enable interrupts now that set up is done
 
       // we want INT30, i.e., 4n+2, 4*7+2, bits 23:21, we set priority level to say '5' ==> 101 => 1010 = A
-      NVIC_PRI7_R = (NVIC_PRI7_R & 0xFF0FFFFF)|0x00A00000; // priority 5, lower means higher priority
+      /* We choose 4n + 2 because we need an equation that gives n as a whole number and a valid priority number. */
+      priority = pri << 21;
+      NVIC_PRI7_R = (NVIC_PRI7_R & 0xFF0FFFFF) | priority;
       NVIC_EN0_R = 0x40000000;  // finally enable Interrupt # 30 (i.e., IRQ30 ==> bit 30 of NVIC_EN0), GPIO PortF
 }

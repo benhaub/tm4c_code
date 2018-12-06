@@ -89,18 +89,113 @@ void init_timer0B_PWMoneShot(unsigned int control, uint32_t period, unsigned int
         TIMER0_CTL_R |= 0x4000;
     TIMER0_CTL_R |= 0x0100;
 }
+/*
+ * In one shot mode, the timer counts until the timeout event, then stops.
+ * The timer is enabled at the end of this routine
+ *
+ * param config:
+ *          1 for 32 bit timer
+ *          0 for 16 bit timer
+ *
+ * param dir:
+ *          1 for up counter
+ *          0 for down counter
+ *
+ * param snap (Pg. 687):
+ *          Use snapshot mode for one-shot and period mode. Use 1 to
+ *          enable, 0 to disable. Snap shot saves the value
+ *          of TBV in GPTMBR when the timeout event occurs.
+ *
+ * param wot (Pg. 671):
+ *          Wait on trigger. If 0, the timer begins as soon as TBEN is turned
+ *          on (as soon as this function returns). If 1, does not start counting
+ *          until the previous counter in the daisy chain reaches it's timeout event.
+ *
+ * param load:
+ *          The load value for the time out even in the interval load register.
+ *          If counting up, count until this number. If counting down, start at
+ *          this number.
+ *
+ * The timeout event is dependent on the direction of the timer. If counting
+ * up, the timer starts at zero, and counts until the value in ILR. If counting
+ * down, the timer starts at ILR, and counts to 0 (Pg. 710).
+ */
+void init_timer0B_oneShot(int config, int dir, int snap, int wot, int load) {
 
-void init_timer0B_oneShot(int dir, int snap, int wot, int mte, uint32_t period) {
-
-
+    volatile unsigned long delay_clk;
+    SYSCTL_RCGCTIMER_R |= 0x01;
+    delay_clk = SYSCTL_RCGCTIMER_R; //delay to allow the clock to settle, no operation
+    /* Disable TimerB for setup */
+    TIMER0_CTL_R &= ~0x0100; //Pg. 690
+    if(config)
+        TIMER0_CFG_R |= 0x00000000; //Pg. 680
+    else
+        TIMER0_CFG_R |= 0x00000004;
+    TIMER0_TBMR_R |= 0x01;
+    if(snap)
+        TIMER0_TBMR_R |= 0x00000080;
+    else
+        TIMER0_TBMR_R &= ~0x00000080;
+    if(wot)
+        TIMER0_TBMR_R |= 0x00000040;
+    else
+        TIMER0_TBMR_R &= ~0x00000040;
+    TIMER0_TBILR_R = load;
+    /* Enable the timer */
+    TIMER0_CTL_R |= 0x0100;
 }
+/*
+ * Once the timeout event is reached, the counter is reset, and starts counting
+ * again.
+ *
+ * param config:
+ *          1 for 32 bit timer
+ *          0 for 16 bit timer
+ *
+ * param dir:
+ *          1 for up counter
+ *          0 for down counter
+ *
+ * param snap (Pg. 687):
+ *          Use snapshot mode for one-shot and period mode. Use 1 to
+ *          enable, 0 to disable. Snap shot saves the value
+ *          of TBV in GPTMBR when the timeout event occurs.
+ *
+ * param wot (Pg. 671):
+ *          Wait on trigger. If 0, the timer begins as soon as TBEN is turned
+ *          on (as soon as this function returns). If 1, does not start counting
+ *          until the previous counter in the daisy chain reaches it's timeout event.
+ *
+ * param load:
+ *          The load value for the time out even in the interval load register.
+ *          If counting up, count until this number. If counting down, start at
+ *          this number.
+ *
+ * The timeout event is dependent on the direction of the timer. If counting
+ * up, the timer starts at zero, and counts until the value in ILR. If counting
+ * down, the timer starts at ILR, and counts to 0.
+ */
+void init_timer0B_periodic(int config, int dir, int snap, int wot, int load) {
 
-void init_timer0B_periodic(dir, snap, wot, mte, period) {
-
-
-}
-
-void init_timer0B_capture() {
-
-    /* TODO: Implement */
+    volatile unsigned long delay_clk;
+    SYSCTL_RCGCTIMER_R |= 0x01;
+    delay_clk = SYSCTL_RCGCTIMER_R; //delay to allow the clock to settle, no operation
+    /* Disable TimerB for setup */
+    TIMER0_CTL_R &= ~0x0100;
+    if(config)
+        TIMER0_CFG_R |= 0x00000000;
+    else
+        TIMER0_CFG_R |= 0x00000004;
+    TIMER0_TBMR_R |= 0x02;
+    if(snap)
+        TIMER0_TBMR_R |= 0x00000080;
+    else
+        TIMER0_TBMR_R &= ~0x00000080;
+    if(wot)
+        TIMER0_TBMR_R |= 0x00000040;
+    else
+        TIMER0_TBMR_R &= ~0x00000040;
+    TIMER0_TBILR_R = load;
+    /* Enable the timer */
+    TIMER0_CTL_R |= 0x0100;
 }

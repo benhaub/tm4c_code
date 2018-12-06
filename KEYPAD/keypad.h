@@ -10,6 +10,11 @@
 
 void init_keypad();
 unsigned int scan_key();
+void init_keypadAB();
+unsigned int scan_keyAB();
+void init_keypadDE();
+unsigned int scan_keyDE();
+
 
 
 

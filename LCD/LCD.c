@@ -67,14 +67,16 @@ void writeLCD(char* msg, size_t numChars, int yPosition, unsigned int char_colou
  * param yPosition: The y position of the start of the line
  * param fontSize: the size of the font you are clearing
  */
-void clearLCDLines(int yPosition, size_t length, int fontSize) {
+void clearLCDLines(int yPosition, int fontSize) {
 
-    char *clear = " ";
+    char *clear = "                    ";
 
     writeLCD(clear, strlen(clear), yPosition, ST7735_BLACK, ST7735_BLACK, fontSize);
 }
 
 /*
+ * LCD functions require Systick.c. Don't forget to include an interrupt handler.
+ *
  * Initialise the LCD display by setting the colour of the display, the
  * initTAB, and orientation
  *
@@ -84,7 +86,7 @@ void clearLCDLines(int yPosition, size_t length, int fontSize) {
  *
  * param rotation: The orientation of the screen. Valid range is 0 to 3
  */
-void LCDinit(unsigned int displayColour, int rotation) {
+void init_LCD(unsigned int displayColour, int rotation) {
 
     // refer to LCD function reference_v1.0.pdf
     // ***note that LCD initilization takes more than 1 sec***
@@ -247,6 +249,76 @@ void display12BitHex(int num, int x, int y, unsigned int char_colour, unsigned i
         else /*(fontsize = 3)*/ {
 
             x = x + 18;
+        }
+    }
+}
+/*
+ * Draw a coloured rectangle, and move it's x any postion around
+ * the screen with respect to the top left corner.
+ *
+ * param fill:
+ *          Use 1 to fill, 0 to leave empty
+ *
+ * Colour Options:
+ *              ST7735_BLACK
+ *              ST7735_BLUE
+ *              ST7735_RED
+ *              ST7735_GREEN
+ *              ST7735_CYAN
+ *              ST7735_MAGENTA
+ *              ST7735_YELLOW
+ *              ST7735_WHITE
+ */
+void drawRectangle(int x, int y, int width, int length, int fill, unsigned int colour) {
+
+    /*
+     * First it draws the top line, then the right line, then the bottom,
+     * then the left. Some useful values for x and y are:
+     *                  10, 10  - top right corner
+     *                  110, 10 - top left corner
+     *                  110, 70 - bottom left corner
+     *                  10, 70  - bottom right corner
+     *                  65, 35  - approximately the middle
+     */
+    ST7735_DrawFastVLine(y, x, length, colour);
+    ST7735_DrawFastHLine(y, x, width, colour);
+    ST7735_DrawFastVLine(width+y, x, length, colour);
+    ST7735_DrawFastHLine(y, x+length, width, colour);
+
+    if(fill)
+        ST7735_FillRect(y, x, width, length, colour);
+}
+
+/*
+ * Draw a circle. Some useful positions are:
+ *                  30 - Top right corner
+ *                  60 - middle right
+ *
+ *                 Some useful values for radius are
+ *                  30 - Size of your fingertip
+ *
+ * param fill:
+ *          Enter 1 to fill, 0 to leave unfilled
+ *
+ * param colour:
+ *          Options are:
+ *              ST7735_BLACK
+ *              ST7735_BLUE
+ *              ST7735_RED
+ *              ST7735_GREEN
+ *              ST7735_CYAN
+ *              ST7735_MAGENTA
+ *              ST7735_YELLOW
+ *              ST7735_WHITE
+ */
+void drawCircle(int position, int radius, int fill, unsigned int colour) {
+
+    ST7735_DrawCircle(position, position, radius, colour);
+
+    if(fill) {
+        int i;
+        for(i = radius; i > 0 ; i--) {
+            ST7735_DrawCircle(position, position, radius-i, colour);
         }
     }
 }

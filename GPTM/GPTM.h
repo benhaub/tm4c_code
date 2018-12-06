@@ -10,8 +10,7 @@
 
 void init_timer0B_PWMperiodic(unsigned int, uint32_t, unsigned int, int);
 void init_timer0B_PWMoneShot(unsigned int, uint32_t, unsigned int, int);
-void init_timer0B_oneShot(int, int, int, int, uint32_t);
-void init_timer0B_periodic(int, int, int, int, uint32_t);
-void init_timer0B_capture();
+void init_timer0B_oneShot(int, int, int, int, int);
+void init_timer0B_periodic(int, int, int, int, int);
 
 #endif /* GPTM_H_ */

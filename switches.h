@@ -14,6 +14,6 @@
 void init_sw1();
 void init_sw2();
 void sw1_interrupt(int, int, int);
-void sw2_interrupt(int, int, int);
+void sw2_interrupt(int, int, int, int);
 
 #endif /* GPIO_INIT_PROCEDURES_H_ */

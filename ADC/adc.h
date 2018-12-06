@@ -13,6 +13,7 @@ void init_adc0(unsigned int, unsigned int, unsigned int);
 uint32_t ADC0_InSeq3(void);
 void init_adc1(unsigned int, unsigned int, unsigned int);
 uint32_t ADC0_InSeq2(void);
+void ADC0_interrupt(int, int, int, int, int, int, int, int, int, int);
 
 
 #endif /* ADC_H_ */

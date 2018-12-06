@@ -18,9 +18,11 @@
 
 unsigned char hex2char(unsigned int hex);
 void writeLCD(char *, size_t, int, unsigned int, unsigned int, int);
-void clearLCDLines(size_t, int);
-void LCDinit(unsigned int, int);
+void clearLCDLines(int, int);
+void init_LCD(unsigned int, int);
 void display2dgNum(int, int, int, unsigned int, unsigned int, int);
 void display12BitHex(int, int, int, unsigned int, unsigned int, int);
+void drawRectangle(int, int, int, int, int, unsigned int);
+void drawCircle(int, int, int, unsigned int);
 
 #endif /* LCD_H_ */

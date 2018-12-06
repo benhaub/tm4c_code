@@ -6,6 +6,21 @@
  *      Author: Ben
  */
 
+void init_LED() {
+
+    SYSCTL_RCGC1_R |= 0x20; // p.421, activate UART1
+    SYSCTL_RCGC2_R |= 0x20; // p.424, activate clock gating for Port F
+
+    GPIO_PORTF_DIR_R |= 0x0E;
+    GPIO_PORTF_DEN_R |= 0x0E;
+    GPIO_PORTF_AFSEL_R &= 0x0E;
+}
+
+void LED_delay() {
+    long unsigned i;
+    for (i = 0; i < 1000000; i++);
+}
+
 void flash_red() {
 
     /* Turn on */
@@ -61,9 +76,4 @@ void stay_red() {
 void turn_off_red() {
 
     GPIO_PORTF_DATA_R &= ~0x02;
-}
-
-void LED_delay() {
-    long unsigned i;
-    for (i = 0; i < 1000000; i++);
 }

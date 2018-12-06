@@ -16,6 +16,8 @@ void flash_red();
 /*
  * Turns on the red LED, but does not shut it off
  */
+void init_LED();
+
 void stay_red();
 
 void turn_off_red();
